@@ -9,12 +9,12 @@ int main (int argc, char *argv[], char *envp[]) {
 
     int pid ; //process identifier
     int i;	//counter
+    int nucleos; //number of CPU's cores
     FILE *file; //auxiliar file
     char cpu[100]; //command of cpu usage 
     char mem[100]; //command of memory usage 
     char cm[100]; //command used to kill the process
-    char nucleos[100]; //command used to get number of CPU's cores
-    char aux1[100], aux2[100], aux3[100];
+    char aux1[100], aux2[100];
     
 	pid = fork() ; //process replication
 
@@ -29,16 +29,13 @@ int main (int argc, char *argv[], char *envp[]) {
         sprintf(aux2, "%s%d%s", "cat /proc/", pid,"/status | grep VmSize | awk '{print $2}'");
         sprintf(cm, "%s%d", "kill -9 ", pid);
         
-        strcpy(aux3, "cat /proc/cpuinfo | grep 'cpu cores' | awk '{print $4}'");
-        
-        file = popen(aux3, "r");
-        fgets(nucleos, 100, file);
+        nucleos = get_nprocs_conf();
 
         for(i = 0; i < 10; i++) {
             //file receives the result of the command and the string cpu stores the result
             file = popen(aux1, "r");
             fgets(cpu, 100, file);
-            printf("CPU: %.1f%c\n", atof(cpu)/atof(nucleos) , 37);
+            printf("CPU: %.1f%c\n", atof(cpu)/nucleos , 37);
             
             //file receives the result of the command and the string mem stores the result
             file = popen(aux2, "r");
@@ -70,4 +67,5 @@ int main (int argc, char *argv[], char *envp[]) {
 	exit(0) ; //terminates the process with success (code 0) */ 
 
 }
+
 
